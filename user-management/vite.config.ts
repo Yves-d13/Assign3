@@ -1,14 +1,22 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { viteMockServe } from 'vite-plugin-mock'
 
-// https://vitejs.dev/config/
+
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(new URL('.', import.meta.url).pathname, './src'),  
+  plugins: [
+    react(),
+    viteMockServe({
+      mockPath: 'mock',
+      enable: true,
+    }),
+  ],
+
+    server: {
+      hmr: {
+        clientPort: 5173, // Explicitly set HMR port
+      },
     },
-  },
-});
+  })
+
+
