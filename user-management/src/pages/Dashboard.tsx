@@ -24,6 +24,7 @@ interface NewUser {
 }
 
 export default function Dashboard() {
+  
   const navigate = useNavigate();
   const { accessToken, logout } = useAuthStore();
   const { darkMode, toggleTheme } = useThemeStore();
@@ -41,6 +42,8 @@ export default function Dashboard() {
     dob: "",
   });
   const [loading, setLoading] = useState(false);
+
+  
 
   useEffect(() => {
     const fetchUsers = async () => {
