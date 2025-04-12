@@ -78,13 +78,17 @@ function UserManagement() {
       />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
-        <input
-          type="text"
-          placeholder="Search users..."
-          className="w-full p-3 mb-8 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-gray-700 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+                  <input
+              type="text"
+              placeholder="Search users..."
+              className={`w-full p-3 mb-8 border rounded-lg shadow-sm focus:outline-none focus:ring-2 ${
+                darkMode
+                  ? "border-gray-600 text-white bg-gray-800 focus:ring-blue-400"
+                  : "border-gray-300 text-gray-700 bg-white focus:ring-blue-400"
+              }`}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
 
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {filteredUsers.map((user, index) => (
