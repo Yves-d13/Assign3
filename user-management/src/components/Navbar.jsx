@@ -29,6 +29,3 @@ export default function Navbar({ onCreateUser, onLogout, onToggleTheme, darkMode
     </header>
   );
 }
-  
-  
-  
