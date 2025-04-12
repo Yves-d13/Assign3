@@ -4,16 +4,8 @@ import { useAuthStore, useThemeStore } from "../store/store";
 import Navbar from "../components/Navbar";
 import UserCard from "../components/UserCard";
 import '../index.css';
+import { User } from "../types/index";
 import React from "react";
-
-interface User {
-  id?: string;
-  firstName: string;
-  lastName?: string;
-  email: string;
-  status: string;
-  dob: string;
-}
 
 interface NewUser {
   firstName: string;
@@ -24,7 +16,6 @@ interface NewUser {
 }
 
 export default function Dashboard() {
-  
   const navigate = useNavigate();
   const { accessToken, logout } = useAuthStore();
   const { darkMode, toggleTheme } = useThemeStore();
@@ -42,12 +33,12 @@ export default function Dashboard() {
     dob: "",
   });
   const [loading, setLoading] = useState(false);
-
-  
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
+      setError(null);
       try {
         const url = search ? `/api/users?search=${search}` : '/api/users';
         const response = await fetch(url, {
@@ -55,19 +46,21 @@ export default function Dashboard() {
             Authorization: `Bearer ${accessToken}`
           }
         });
-        
+
         if (!response.ok) {
           if (response.status === 401) {
             logout();
             navigate('/login');
+            return;
           }
-          throw new Error('Failed to fetch users');
+          throw new Error(`Failed to fetch users: ${response.statusText}`);
         }
 
         const data = await response.json();
-        setUsers(data.result.data.users);
+        setUsers(data.result?.data?.users || []);
       } catch (error) {
         console.error('Error fetching users:', error);
+        setError(error instanceof Error ? error.message : 'Failed to fetch users');
       } finally {
         setLoading(false);
       }
@@ -89,22 +82,33 @@ export default function Dashboard() {
 
   const handleSaveNewUser = async () => {
     try {
+      setError(null);
       const response = await fetch('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(newUser)
+        body: JSON.stringify(newUser),
       });
-
-      if (!response.ok) throw new Error('Failed to create user');
-
+  
+      if (!response.ok) {
+        throw new Error(`Failed to create user: ${response.statusText}`);
+      }
+  
       const createdUser = await response.json();
-      setUsers([...users, createdUser]);
+      setUsers((prevUsers) => [...prevUsers, createdUser]);
       setIsCreateModalOpen(false);
+      setNewUser({
+        firstName: '',
+        lastName: '',
+        email: '',
+        status: 'Active',
+        dob: '',
+      });
     } catch (error) {
       console.error('Error creating user:', error);
+      setError(error instanceof Error ? error.message : 'Failed to create user');
     }
   };
 
@@ -114,40 +118,61 @@ export default function Dashboard() {
   };
 
   const handleDelete = async (user: User) => {
+    if (!window.confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
+      return;
+    }
+  
     try {
+      setError(null);
       const response = await fetch(`/api/users/${user.id}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
-
-      if (!response.ok) throw new Error('Failed to delete user');
-
-      setUsers(users.filter(u => u.id !== user.id));
+  
+      if (!response.ok) {
+        if (response.status === 401) {
+          logout();
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Failed to delete user: ${response.statusText}`);
+      }
+  
+      setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
     } catch (error) {
       console.error('Error deleting user:', error);
+      setError(error instanceof Error ? error.message : 'Failed to delete user');
     }
   };
 
   const handleSaveEdit = async () => {
+    if (!currentUser) return;
+  
     try {
-      const response = await fetch(`/api/users/${currentUser?.id}`, {
+      setError(null);
+      const response = await fetch(`/api/users/${currentUser.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(currentUser)
+        body: JSON.stringify(currentUser),
       });
-
-      if (!response.ok) throw new Error('Failed to update user');
-
+  
+      if (!response.ok) {
+        throw new Error(`Failed to update user: ${response.statusText}`);
+      }
+  
       const updatedUser = await response.json();
-      setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
+      setUsers((prevUsers) =>
+        prevUsers.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+      );
       setIsEditModalOpen(false);
     } catch (error) {
       console.error('Error updating user:', error);
+      setError(error instanceof Error ? error.message : 'Failed to update user');
     }
   };
 
@@ -164,6 +189,12 @@ export default function Dashboard() {
       />
 
       <main className="max-w-7xl mx-auto px-6 py-8">
+        {error && (
+          <div className={`p-4 mb-4 rounded-lg ${darkMode ? "bg-red-900" : "bg-red-100"}`}>
+            {error}
+          </div>
+        )}
+
         <input
           type="text"
           placeholder="Search users..."
@@ -186,8 +217,8 @@ export default function Dashboard() {
               <UserCard
                 key={user.id}
                 user={user}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+                onEdit={() => handleEdit(user)}
+                onDelete={() => handleDelete(user)}
                 darkMode={darkMode}
               />
             ))}
@@ -210,6 +241,7 @@ export default function Dashboard() {
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
               value={newUser.firstName}
               onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })}
+              required
             />
             <input
               type="text"
@@ -217,6 +249,7 @@ export default function Dashboard() {
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
               value={newUser.lastName}
               onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
+              required
             />
             <input
               type="email"
@@ -224,6 +257,7 @@ export default function Dashboard() {
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
               value={newUser.email}
               onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              required
             />
             <select
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
@@ -238,20 +272,22 @@ export default function Dashboard() {
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
               value={newUser.dob}
               onChange={(e) => setNewUser({ ...newUser, dob: e.target.value })}
+              required
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-2">
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
                 onClick={() => setIsCreateModalOpen(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={handleSaveNewUser}
-              >
-                Save
-              </button>
+  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+  onClick={handleSaveNewUser}
+  disabled={!newUser.firstName || !newUser.email}
+>
+  Save
+</button>
             </div>
           </div>
         </div>
@@ -268,6 +304,7 @@ export default function Dashboard() {
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
               value={currentUser.firstName}
               onChange={(e) => setCurrentUser({ ...currentUser, firstName: e.target.value })}
+              required
             />
             <input
               type="text"
@@ -282,6 +319,7 @@ export default function Dashboard() {
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
               value={currentUser.email}
               onChange={(e) => setCurrentUser({ ...currentUser, email: e.target.value })}
+              required
             />
             <select
               className={`w-full p-2 mb-4 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
@@ -297,16 +335,17 @@ export default function Dashboard() {
               value={currentUser.dob}
               onChange={(e) => setCurrentUser({ ...currentUser, dob: e.target.value })}
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-2">
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition-colors"
                 onClick={() => setIsEditModalOpen(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
                 onClick={handleSaveEdit}
+                disabled={!currentUser.firstName || !currentUser.email}
               >
                 Save
               </button>

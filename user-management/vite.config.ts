@@ -1,25 +1,13 @@
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-import { viteMockServe } from "vite-plugin-mock";
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { viteMockServe } from 'vite-plugin-mock';
 
 export default defineConfig({
   plugins: [
-    react(),
+    vue(),
     viteMockServe({
-      mockPath: 'mock',
-      enable: true,
-      watchFiles: true, // Add this to watch mock file changes
-    })
+      mockPath: 'mock', // Path to your mock folder
+      enable: true, // Enable mock in local development
+    }),
   ],
-  server: {
-    port: 5173, // Explicitly set port
-    cors: true, // Enable CORS
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5173',
-        changeOrigin: true,
-        secure: false
-      }
-    }
-  }
-})
+});

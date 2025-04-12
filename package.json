@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite-plugin-mock": "^3.0.2"
+  }
+}

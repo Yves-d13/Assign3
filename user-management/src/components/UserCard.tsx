@@ -54,18 +54,18 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
       </p>
       
       <div className="flex gap-2">
-        <button
-          onClick={() => onEdit(user)}
-          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => onDelete(user)}
-          className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-        >
-          Delete
-        </button>
+      <button
+  onClick={() => onEdit(user)}
+  className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+>
+  Edit
+</button>
+<button
+  onClick={() => onDelete(user)}
+  className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+>
+  Delete
+</button>
       </div>
     </div>
   );
