@@ -5,8 +5,8 @@ import { useThemeStore } from '../store/store'
 import React from 'react'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('') // No default value
+  const [password, setPassword] = useState('') // No default value
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -38,7 +38,7 @@ export default function Login() {
         login(data.result.data.accessToken, data.result.data.expiresIn)
         navigate('/dashboard')
       } else {
-        setError(data.result.message || 'Login failed')
+        setError(data.result.message || 'Invalid credentials. Please try again.')
       }
     } catch (err) {
       setError('Network error. Please try again.')
