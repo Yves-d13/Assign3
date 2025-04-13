@@ -1,7 +1,15 @@
 import { MoonIcon, SunIcon } from "@heroicons/react/outline";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar({ onCreateUser, onLogout, onToggleTheme, darkMode }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    onLogout();
+    navigate("/login"); // Redirect to the Login page
+  };
+
   return (
     <header className="bg-blue-700 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -14,7 +22,7 @@ export default function Navbar({ onCreateUser, onLogout, onToggleTheme, darkMode
             Create User
           </button>
           <button
-            onClick={onLogout}
+            onClick={handleLogout}
             className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
           >
             Logout

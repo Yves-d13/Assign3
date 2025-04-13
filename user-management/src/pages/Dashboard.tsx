@@ -40,7 +40,7 @@ function UserManagement() {
 
   const handleEdit = (user) => {
     const updatedUsers = users.map((u) =>
-      u.email === user.email ? { ...u, firstName: "Edited", lastName: "User" } : u
+      u.email === user.email ? user : u
     );
     setUsers(updatedUsers);
   };
@@ -61,7 +61,7 @@ function UserManagement() {
 
   return (
     <div className={darkMode ? "dark" : ""}>
-      <div className="min-h-screen bg-white dark:bg-gray-900 dark:text-white">
+      <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
         <Navbar
           onCreateUser={handleCreateUser}
           onLogout={handleLogout}
@@ -72,7 +72,9 @@ function UserManagement() {
           <input
             type="text"
             placeholder="Search users..."
-            className="w-full p-3 mb-8 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-gray-700 dark:text-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`w-full p-3 mb-8 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+              darkMode ? "border-gray-600 bg-gray-800 text-white" : "border-gray-300 bg-white text-black"
+            }`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
