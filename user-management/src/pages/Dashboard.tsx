@@ -5,7 +5,7 @@ import '../index.css';
 import React from "react";
 
 const dummyUsers = [
-  { firstName: "John", lastName: "Doe", email: "john.doe@example.com", status: "Active", dob: "1990-05-15" },
+  { firstName: "Yves", lastName: "Al Debs", email: "debsyves@gmail.com", status: "Active", dob: "2003-05-05" },
   { firstName: "Jane", lastName: "Smith", email: "jane.smith@example.com", status: "Locked", dob: "1988-10-22" },
   { firstName: "Alice", lastName: "Johnson", email: "alice.johnson@example.com", status: "Active", dob: "1995-02-10" },
   { firstName: "Bob", lastName: "Martin", email: "bob.martin@example.com", status: "Locked", dob: "1980-08-05" },
