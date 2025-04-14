@@ -110,14 +110,6 @@
       "lastName": "User",
       "email": "new.user1744592800987@example.com",
       "status": "ACTIVE"
-    },
-    {
-      "id": "1744593028646",
-      "firstName": "yves al debs",
-      "lastName": "user1",
-      "email": "new.user1744593027631@example.com",
-      "status": "ACTIVE",
-      "dob": "2003-05-05"
     }
   ]
 }

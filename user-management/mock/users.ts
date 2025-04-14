@@ -77,6 +77,30 @@ const mock: MockMethod[] = [
       }
     },
   },
+  // DELETE: Delete a user
+  {
+    url: '/api/users/:id',
+    method: 'delete',
+    timeout: 1000,
+    response: ({ query }) => {
+      const userId = query.id;
+      const userIndex = users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        const deletedUser = users.splice(userIndex, 1); // Remove the user from the array
+        saveUsersToFile(users); // Save the updated users to the file
+        return {
+          status: 200,
+          message: 'User deleted successfully',
+          user: deletedUser,
+        };
+      } else {
+        return {
+          status: 404,
+          message: 'User not found',
+        };
+      }
+    },
+  },
 ];
 
 export default mock;

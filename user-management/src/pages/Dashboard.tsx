@@ -72,6 +72,23 @@ function UserManagement() {
     }
   };
 
+  // Delete a user
+  const deleteUser = async (userToDelete) => {
+    try {
+      const response = await fetch(`/api/users/${userToDelete.id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id)); // Remove the user from the state
+      } else {
+        console.error("Failed to delete user:", data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
   // Fetch all users on initial load
   useEffect(() => {
     fetchUsers();
@@ -111,10 +128,7 @@ function UserManagement() {
                 key={index}
                 user={user}
                 onEdit={editUser} // Pass the editUser function
-                onDelete={(userToDelete) => {
-                  const updatedUsers = users.filter((u) => u.id !== userToDelete.id);
-                  setUsers(updatedUsers);
-                }}
+                onDelete={deleteUser} // Pass the deleteUser function
                 darkMode={darkMode}
               />
             ))}
