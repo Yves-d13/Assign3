@@ -4,7 +4,14 @@ import { ApiHeaders } from './mock.type';
 import { generateResponse, getUnAuthorizedResponse, validateToken } from './mock.util';
 import usersData from './users.json';
 
-let users = [...usersData.users]; // Use a mutable array to simulate a database
+interface User {
+  id: number;
+  firstName: string;
+  lastName?: string;
+  email: string;
+}
+
+let users: User[] = [...usersData.users]; // Use a mutable array to simulate a database
 
 const mock: MockMethod[] = [
   // GET: Fetch users
