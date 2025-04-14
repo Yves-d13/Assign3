@@ -6,41 +6,37 @@ import React from "react";
 
 function UserManagement() {
   const [search, setSearch] = useState("");
-  interface User {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    [key: string]: any; // Add this if there are additional dynamic properties
-  }
-
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<{ id: number; [key: string]: any }[]>([]);
   const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('/api/users');
-        const data = await response.json();
-        if (response.status === 200) {
-          setUsers(data.users || []);
-        } else {
-          console.error("Failed to fetch users:", data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
+  // Fetch users from the API
+  const fetchUsers = async (query = "") => {
+    try {
+      const response = await fetch(`/api/users?search=${query}`); // Pass the search query as a query parameter
+      const data = await response.json();
+      if (response.status === 200) {
+        setUsers(data.users || []);
+      } else {
+        console.error("Failed to fetch users:", data.message);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
+  // Fetch all users on initial load
+  useEffect(() => {
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.firstName?.toLowerCase().includes(search.toLowerCase()) ||
-      user.lastName?.toLowerCase().includes(search.toLowerCase()) ||
-      user.email?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Fetch users whenever the search input changes
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchUsers(search);
+    }, 300); // Add a debounce delay to avoid excessive API calls
+
+    return () => clearTimeout(delayDebounceFn); // Cleanup the timeout
+  }, [search]);
 
   return (
     <div className={darkMode ? "dark" : ""}>
@@ -62,7 +58,7 @@ function UserManagement() {
             onChange={(e) => setSearch(e.target.value)}
           />
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filteredUsers.map((user, index) => (
+            {users.map((user, index) => (
               <UserCard
                 key={index}
                 user={user}

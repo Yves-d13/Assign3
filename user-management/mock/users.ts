@@ -8,15 +8,22 @@ let users = usersData.users.map((user) => ({
 }));
 
 const mock: MockMethod[] = [
-  // GET: Fetch all users
+  // GET: Fetch all users or filter by search query
   {
     url: '/api/users',
     method: 'get',
     timeout: 1000,
-    response: () => {
+    response: ({ query }) => {
+      const search = query.search?.toLowerCase() || "";
+      const filteredUsers = users.filter(
+        (user) =>
+          user.firstName?.toLowerCase().includes(search) ||
+          user.lastName?.toLowerCase().includes(search) ||
+          user.email?.toLowerCase().includes(search)
+      );
       return {
         status: 200,
-        users: users,
+        users: filteredUsers,
       };
     },
   },
