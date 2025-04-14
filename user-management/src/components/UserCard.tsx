@@ -26,7 +26,7 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
     setEditedUser({ ...editedUser, [name]: value });
   };
 
-  const initials = `${user.firstName[0]}${user.lastName[0] || ""}`.toUpperCase();
+  const initials = `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`.toUpperCase();
 
   return (
     <div
@@ -35,14 +35,14 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
       }`}
     >
       <div className="w-16 h-16 bg-blue-700 text-white rounded-full flex items-center justify-center text-lg font-bold mb-4">
-        {initials}
+        {initials || "NA"}
       </div>
       {isEditing ? (
         <div className="flex flex-col gap-2 w-full">
           <input
             type="text"
             name="firstName"
-            value={editedUser.firstName}
+            value={editedUser.firstName || ""}
             onChange={handleChange}
             className={`p-2 border rounded ${
               darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
@@ -52,7 +52,7 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
           <input
             type="text"
             name="lastName"
-            value={editedUser.lastName}
+            value={editedUser.lastName || ""}
             onChange={handleChange}
             className={`p-2 border rounded ${
               darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
@@ -62,7 +62,7 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
           <input
             type="email"
             name="email"
-            value={editedUser.email}
+            value={editedUser.email || ""}
             onChange={handleChange}
             className={`p-2 border rounded ${
               darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
@@ -72,7 +72,7 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
           <input
             type="text"
             name="status"
-            value={editedUser.status}
+            value={editedUser.status || ""}
             onChange={handleChange}
             className={`p-2 border rounded ${
               darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
@@ -82,7 +82,7 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
           <input
             type="date"
             name="dob"
-            value={editedUser.dob}
+            value={editedUser.dob || ""}
             onChange={handleChange}
             className={`p-2 border rounded ${
               darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
@@ -106,28 +106,16 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
       ) : (
         <>
           <h2 className="text-lg font-semibold mb-1">
-            {user.firstName} {user.lastName}
+            {user.firstName || "Unknown"} {user.lastName || ""}
           </h2>
-          <p
-            className={`text-sm ${
-              darkMode ? "text-gray-300" : "text-black"
-            }`}
-          >
-            Email: {user.email}
+          <p className={`text-sm ${darkMode ? "text-gray-300" : "text-black"}`}>
+            Email: {user.email || "No email provided"}
           </p>
-          <p
-            className={`text-sm ${
-              darkMode ? "text-gray-300" : "text-black"
-            }`}
-          >
-            Status: {user.status.toLowerCase()}
+          <p className={`text-sm ${darkMode ? "text-gray-300" : "text-black"}`}>
+            Status: {user.status || "Unknown"}
           </p>
-          <p
-            className={`text-sm mb-4 ${
-              darkMode ? "text-gray-300" : "text-black"
-            }`}
-          >
-            Date of Birth: {user.dob}
+          <p className={`text-sm mb-4 ${darkMode ? "text-gray-300" : "text-black"}`}>
+            Date of Birth: {user.dob || "Unknown"}
           </p>
           <div className="flex gap-2">
             <button

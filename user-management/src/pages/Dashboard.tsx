@@ -1,71 +1,54 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import UserCard from "../components/UserCard";
 import '../index.css'; 
 import React from "react";
 
-const dummyUsers = [
-  { firstName: "Yves", lastName: "Al Debs", email: "debsyves@gmail.com", status: "Active", dob: "2003-05-05" },
-  { firstName: "Jane", lastName: "Smith", email: "jane.smith@example.com", status: "Locked", dob: "1988-10-22" },
-  { firstName: "Alice", lastName: "Johnson", email: "alice.johnson@example.com", status: "Active", dob: "1995-02-10" },
-  { firstName: "Bob", lastName: "Martin", email: "bob.martin@example.com", status: "Locked", dob: "1980-08-05" },
-  { firstName: "Charlie", lastName: "Brown", email: "charlie.brown@example.com", status: "Active", dob: "1992-11-30" },
-  { firstName: "David", lastName: "Lee", email: "david.lee@example.com", status: "Locked", dob: "1987-07-14" },
-  { firstName: "Eve", lastName: "Green", email: "eve.green@example.com", status: "Active", dob: "1993-09-21" },
-  { firstName: "Frank", lastName: "White", email: "frank.white@example.com", status: "Active", dob: "1994-01-25" },
-  { firstName: "Grace", lastName: "Black", email: "grace.black@example.com", status: "Locked", dob: "1985-03-17" },
-  { firstName: "Hannah", lastName: "", email: "hannah.purple@example.com", status: "Active", dob: "1996-12-03" },
-];
-
 function UserManagement() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState(dummyUsers);
+  interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    [key: string]: any; // Add this if there are additional dynamic properties
+  }
+
+  const [users, setUsers] = useState<User[]>([]);
   const [darkMode, setDarkMode] = useState(false);
 
-  const handleCreateUser = () => {
-    const newUser = {
-      firstName: "New",
-      lastName: "User",
-      email: "new.user@example.com",
-      status: "Active",
-      dob: "2000-01-01",
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        if (response.status === 200) {
+          setUsers(data.users || []);
+        } else {
+          console.error("Failed to fetch users:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
     };
-    setUsers([...users, newUser]);
-  };
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    alert("You have been logged out.");
-  };
-
-  const handleEdit = (user) => {
-    const updatedUsers = users.map((u) =>
-      u.email === user.email ? user : u
-    );
-    setUsers(updatedUsers);
-  };
-
-  const handleDelete = (user) => {
-    const updatedUsers = users.filter((u) => u.email !== user.email);
-    setUsers(updatedUsers);
-  };
-
-  const toggleTheme = () => setDarkMode(!darkMode);
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users.filter(
     (user) =>
-      user.firstName.toLowerCase().includes(search.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
+      user.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+      user.lastName?.toLowerCase().includes(search.toLowerCase()) ||
+      user.email?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
         <Navbar
-          onCreateUser={handleCreateUser}
-          onLogout={handleLogout}
-          onToggleTheme={toggleTheme}
+          onCreateUser={() => {}}
+          onLogout={() => alert("Logged out")}
+          onToggleTheme={() => setDarkMode(!darkMode)}
           darkMode={darkMode}
         />
         <main className="max-w-7xl mx-auto px-6 py-8">
@@ -78,14 +61,21 @@ function UserManagement() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {filteredUsers.map((user, index) => (
               <UserCard
                 key={index}
                 user={user}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+                onEdit={(updatedUser) => {
+                  const updatedUsers = users.map((u) =>
+                    u.id === updatedUser.id ? updatedUser : u
+                  );
+                  setUsers(updatedUsers);
+                }}
+                onDelete={(userToDelete) => {
+                  const updatedUsers = users.filter((u) => u.id !== userToDelete.id);
+                  setUsers(updatedUsers);
+                }}
                 darkMode={darkMode}
               />
             ))}
