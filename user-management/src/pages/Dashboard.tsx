@@ -6,7 +6,7 @@ import React from "react";
 
 function UserManagement() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<{ id: number; [key: string]: any }[]>([]);
+  const [users, setUsers] = useState<{ id: number; firstName: string; lastName: string; email: string; status: string; dob: string }[]>([]);
   const [darkMode, setDarkMode] = useState(false);
 
   // Fetch users from the API
@@ -21,6 +21,33 @@ function UserManagement() {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+    }
+  };
+
+  // Create a new user
+  const createUser = async () => {
+    const newUser = {
+      firstName: "New",
+      lastName: "User",
+      email: `new.user${Date.now()}@example.com`,
+      status: "ACTIVE",
+      dob: "2000-01-01",
+    };
+
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser),
+      });
+      const data = await response.json();
+      if (response.status === 201) {
+        setUsers((prevUsers) => [...prevUsers, data.user]); // Add the new user to the state
+      } else {
+        console.error("Failed to create user:", data.message);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
     }
   };
 
@@ -42,7 +69,7 @@ function UserManagement() {
     <div className={darkMode ? "dark" : ""}>
       <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
         <Navbar
-          onCreateUser={() => {}}
+          onCreateUser={createUser}
           onLogout={() => alert("Logged out")}
           onToggleTheme={() => setDarkMode(!darkMode)}
           darkMode={darkMode}

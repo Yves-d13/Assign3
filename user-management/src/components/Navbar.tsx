@@ -12,7 +12,7 @@ export default function Navbar({ onCreateUser, onLogout, onToggleTheme, darkMode
 
   const handleCreateUser = () => {
     onCreateUser();
-    alert("A new user has been created at the bottom of the list.");
+    alert("A new user has been created and added to the list.");
   };
 
   return (

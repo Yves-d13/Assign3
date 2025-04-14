@@ -1,11 +1,18 @@
 import { MockMethod } from 'vite-plugin-mock';
 import usersData from './users.json';
+import fs from 'fs';
+import path from 'path';
 
 let users = usersData.users.map((user) => ({
   ...user,
   dob: user.dateOfBirth, // Map `dateOfBirth` to `dob`
   lastName: user.lastName || "Unknown", // Provide a default value for missing `lastName`
 }));
+
+const saveUsersToFile = (updatedUsers) => {
+  const filePath = path.resolve(__dirname, './users.json');
+  fs.writeFileSync(filePath, JSON.stringify({ users: updatedUsers }, null, 2));
+};
 
 const mock: MockMethod[] = [
   // GET: Fetch all users or filter by search query
@@ -24,6 +31,25 @@ const mock: MockMethod[] = [
       return {
         status: 200,
         users: filteredUsers,
+      };
+    },
+  },
+  // POST: Create a new user
+  {
+    url: '/api/users',
+    method: 'post',
+    timeout: 1000,
+    response: ({ body }) => {
+      const newUser = {
+        id: Date.now().toString(), // Generate a unique ID
+        ...body,
+      };
+      users.push(newUser);
+      saveUsersToFile(users); // Save the updated users to the file
+      return {
+        status: 201,
+        message: 'User created successfully',
+        user: newUser,
       };
     },
   },
