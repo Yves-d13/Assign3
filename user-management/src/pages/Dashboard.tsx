@@ -6,7 +6,7 @@ import React from "react";
 
 function UserManagement() {
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<{ id: number; firstName: string; lastName: string; email: string; status: string; dob: string }[]>([]);
+  const [users, setUsers] = useState<{ id: number; [key: string]: any }[]>([]);
   const [darkMode, setDarkMode] = useState(false);
 
   // Fetch users from the API
@@ -51,6 +51,27 @@ function UserManagement() {
     }
   };
 
+  // Edit a user
+  const editUser = async (updatedUser) => {
+    try {
+      const response = await fetch(`/api/users/${updatedUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser),
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) => (user.id === updatedUser.id ? data.user : user))
+        ); // Update the user in the state
+      } else {
+        console.error("Failed to edit user:", data.message);
+      }
+    } catch (error) {
+      console.error("Error editing user:", error);
+    }
+  };
+
   // Fetch all users on initial load
   useEffect(() => {
     fetchUsers();
@@ -69,7 +90,7 @@ function UserManagement() {
     <div className={darkMode ? "dark" : ""}>
       <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
         <Navbar
-          onCreateUser={createUser}
+          onCreateUser={createUser} // Pass the createUser function to Navbar
           onLogout={() => alert("Logged out")}
           onToggleTheme={() => setDarkMode(!darkMode)}
           darkMode={darkMode}
@@ -89,12 +110,7 @@ function UserManagement() {
               <UserCard
                 key={index}
                 user={user}
-                onEdit={(updatedUser) => {
-                  const updatedUsers = users.map((u) =>
-                    u.id === updatedUser.id ? updatedUser : u
-                  );
-                  setUsers(updatedUsers);
-                }}
+                onEdit={editUser} // Pass the editUser function
                 onDelete={(userToDelete) => {
                   const updatedUsers = users.filter((u) => u.id !== userToDelete.id);
                   setUsers(updatedUsers);

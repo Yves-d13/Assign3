@@ -53,6 +53,30 @@ const mock: MockMethod[] = [
       };
     },
   },
+  // PUT: Edit an existing user
+  {
+    url: '/api/users/:id',
+    method: 'put',
+    timeout: 1000,
+    response: ({ body, query }) => {
+      const userId = query.id;
+      const userIndex = users.findIndex((user) => user.id === userId);
+      if (userIndex !== -1) {
+        users[userIndex] = { ...users[userIndex], ...body }; // Update the user
+        saveUsersToFile(users); // Save the updated users to the file
+        return {
+          status: 200,
+          message: 'User updated successfully',
+          user: users[userIndex],
+        };
+      } else {
+        return {
+          status: 404,
+          message: 'User not found',
+        };
+      }
+    },
+  },
 ];
 
 export default mock;

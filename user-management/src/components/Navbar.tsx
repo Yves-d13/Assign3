@@ -11,7 +11,7 @@ export default function Navbar({ onCreateUser, onLogout, onToggleTheme, darkMode
   };
 
   const handleCreateUser = () => {
-    onCreateUser();
+    onCreateUser(); // Call the createUser function passed from Dashboard
     alert("A new user has been created and added to the list.");
   };
 

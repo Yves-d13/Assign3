@@ -12,7 +12,7 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
   const [editedUser, setEditedUser] = useState(user);
 
   const handleSave = () => {
-    onEdit(editedUser);
+    onEdit(editedUser); // Call the onEdit function with the updated user
     setIsEditing(false);
   };
 
@@ -34,9 +34,6 @@ export default function UserCard({ user, onEdit, onDelete, darkMode }: UserCardP
         darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
       }`}
     >
-      <div className="w-16 h-16 bg-blue-700 text-white rounded-full flex items-center justify-center text-lg font-bold mb-4">
-        {initials || "NA"}
-      </div>
       {isEditing ? (
         <div className="flex flex-col gap-2 w-full">
           <input

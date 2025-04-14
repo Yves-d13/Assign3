@@ -92,11 +92,32 @@
     },
     {
       "id": "1744592319026",
-      "firstName": "New",
+      "firstName": "yves",
       "lastName": "User",
       "email": "new.user1744592318024@example.com",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "1744592800072",
+      "firstName": "New",
+      "lastName": "User",
+      "email": "new.user1744592799070@example.com",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "1744592801995",
+      "firstName": "New",
+      "lastName": "User",
+      "email": "new.user1744592800987@example.com",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "1744593028646",
+      "firstName": "yves al debs",
+      "lastName": "user1",
+      "email": "new.user1744593027631@example.com",
       "status": "ACTIVE",
-      "dob": "2000-01-01"
+      "dob": "2003-05-05"
     }
   ]
 }
