@@ -7,6 +7,7 @@ import React from 'react';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -72,13 +73,22 @@ export default function Login() {
           </div>
           <div className="mb-4">
             <label className="block mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`w-full p-2 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'} // Toggle input type
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={`w-full p-2 border rounded ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)} // Toggle password visibility
+                className="absolute right-2 top-2 text-sm text-blue-600"
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
           <button
             type="submit"
