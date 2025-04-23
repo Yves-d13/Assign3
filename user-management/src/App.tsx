@@ -9,6 +9,7 @@ import React from 'react';
 // Define ProtectedRoute component separately for better type safety
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
+  console.log('ProtectedRoute isAuthenticated:', isAuthenticated);
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 }
 

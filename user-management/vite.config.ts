@@ -1,13 +1,13 @@
 import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 import { viteMockServe } from 'vite-plugin-mock';
 
 export default defineConfig({
   plugins: [
-    vue(),
+    react(),
     viteMockServe({
-      mockPath: 'mock', // Path to your mock folder
-      enable: true, // Enable mock in local development
+      mockPath: 'mock.2',
+      enable: true, // Enable mock server
     }),
   ],
 });

@@ -19,11 +19,16 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       accessToken: null,
       expiresIn: null,
-      login: (token, expires) => set({ accessToken: token, expiresIn: expires }),
+      login: (token, expires) => {
+        console.log('Saving token:', token, 'Expires in:', expires);
+        set({ accessToken: token, expiresIn: expires });
+      },
       logout: () => set({ accessToken: null, expiresIn: null }),
       isAuthenticated: () => {
-        const { accessToken, expiresIn } = get()
-        return !!accessToken && !!expiresIn && expiresIn > Date.now() / 1000
+        const { accessToken, expiresIn } = get();
+        const isAuth = !!accessToken && !!expiresIn && expiresIn > Date.now() / 1000;
+        console.log('isAuthenticated:', isAuth);
+        return isAuth;
       },
     }),
     { name: 'auth-storage' }
