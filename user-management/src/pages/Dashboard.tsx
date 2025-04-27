@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import UserCard from "../components/UserCard";
 import '../index.css'; 
 import React from "react";
+import { useAuthStore } from "../store/store"; // Import the store to access the token
 
 function UserManagement() {
   const [search, setSearch] = useState("");
@@ -12,12 +13,23 @@ function UserManagement() {
   // Fetch users from the API
   const fetchUsers = async (query = "") => {
     try {
-      const response = await fetch(`/api/users?search=${query}`); // Pass the search query as a query parameter
+      const token = useAuthStore.getState().accessToken; // Get the token from the store
+      console.log("Fetching users with token:", token); // Debugging log
+  
+      const response = await fetch(`/api/users?search=${query}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the request
+        },
+      });
+  
       const data = await response.json();
+      console.log("Users API response:", data); // Debugging log
+  
       if (response.status === 200) {
-        setUsers(data.users || []);
+        // Extract users from the correct path
+        setUsers(data.result?.data?.users || []);
       } else {
-        console.error("Failed to fetch users:", data.message);
+        console.error("Failed to fetch users:", data.result?.message);
       }
     } catch (error) {
       console.error("Error fetching users:", error);

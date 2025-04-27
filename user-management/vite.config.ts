@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     react(),
     viteMockServe({
-      mockPath: 'mock.2',
+      mockPath: 'mock',
       enable: true, // Enable mock server
     }),
   ],

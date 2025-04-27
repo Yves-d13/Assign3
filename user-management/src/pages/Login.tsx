@@ -17,27 +17,28 @@ export default function Login() {
   const handleLogin = async () => {
     setLoading(true);
     setError('');
-
+  
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
-
+  
       // Debugging: Log the response to verify its structure
       console.log('Response data:', data);
-
+  
       // Check if the HTTP status is OK and the response contains a valid token
-      if (response.status === 200 && data.expiresIn && data.accessToken) {
+      if (response.ok && data.result?.data?.accessToken) {
         console.log('Login successful. Redirecting to dashboard...');
-        login(data.accessToken, data.expiresIn); // Save token to the store
+        const { accessToken, expiresIn } = data.result.data;
+        login(accessToken, expiresIn); // Save token to the store
         navigate('/dashboard'); // Redirect to the dashboard
       } else if (response.status === 401) {
         // Invalid credentials
-        setError(data.message || 'Invalid credentials. Please try again.');
+        setError(data.result?.message || 'Invalid credentials. Please try again.');
       } else {
         // Unexpected error
         setError('An unexpected error occurred. Please try again.');
